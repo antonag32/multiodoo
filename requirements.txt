@@ -1,0 +1,2 @@
+redis==5.*
+hiredis==2.*
