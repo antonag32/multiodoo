@@ -9,3 +9,16 @@ so does the data.
 
 MultiOdoo solves this by storing all data in specialized storage engines. Redis is used to store sessions while
 PostgreSQL stores attachments.
+
+## Try it out
+A `compose.yaml` file is included, just run `docker compose up`. This will create the following services:
+
+* Caddy server. Works as a reverse proxy and provides HTTPs.
+* Redis server. Sessions are stored here. An administrative interface is also provided on port `8001`.
+* PostgreSQL server. All other data, including attachments will be stored here.
+* Bootstrap server. This service initializes the database before parallel instances are run. 
+* Odoo servers. Three odoo servers are run in parallel. These servers are the one fulfilling users' requests. 
+  You should see logs from all three servers, indicating the load is being distributed among them.
+
+Odoo will be available on https://localhost:8443. To avoid getting HTTPS certificate warnings consider
+setting up Caddy's CA on your computer.

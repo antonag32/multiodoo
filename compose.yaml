@@ -1,0 +1,55 @@
+name: multiodoo
+services:
+  proxy:
+    image: caddy:2.7.6
+    ports:
+      - "8080:80"
+      - "8443:443"
+      - "8443:443/udp"
+    volumes:
+      - /data
+      - ./Caddyfile:/etc/caddy/Caddyfile
+  cache:
+    image: redis/redis-stack:7.2.0-v10
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    depends_on:
+      proxy:
+        condition: service_started
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U odoo" ]
+      interval: 1s
+      timeout: 30s
+      retries: 30
+    depends_on:
+      cache:
+        condition: service_started
+  bootstrap:
+    build:
+      dockerfile: Dockerfile
+    command: [odoo, -i, base, --stop-after-init]
+    volumes:
+      - ./odoo.conf:/etc/odoo/odoo.conf
+      - ./:/mnt/extra-addons
+    depends_on:
+      db:
+        condition: service_healthy
+  odoo:
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - ./odoo.conf:/etc/odoo/odoo.conf
+      - ./:/mnt/extra-addons
+    environment:
+      ODOO_REDIS_URL: redis://cache/
+    deploy:
+      replicas: 3
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
