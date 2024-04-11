@@ -22,3 +22,15 @@ A `compose.yaml` file is included, just run `docker compose up`. This will creat
 
 Odoo will be available on https://localhost:8443. To avoid getting HTTPS certificate warnings consider
 setting up Caddy's CA on your computer.
+
+## Chaos Monkey
+In order to test the resilience of such a setup a Chaos Monkey is available. This monkey will randomly
+kill/start Odoo containers. This simulates system failures. By default, the monkey will leave at least one
+Odoo instance alive. You can modify the wait time between each one of the monkey's action with
+`--min-wait` and `--max-wait`.
+
+To run the chaos monkey with its default behaviour simply execute the following command:
+
+```shell
+./chaos-monkey
+```
