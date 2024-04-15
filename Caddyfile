@@ -1,3 +1,5 @@
 localhost
 
-reverse_proxy odoo:8069
+reverse_proxy odoo:8069 {
+    lb_retries 3
+}
