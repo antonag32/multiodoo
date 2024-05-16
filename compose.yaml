@@ -33,7 +33,7 @@ services:
   bootstrap:
     build:
       dockerfile: Dockerfile
-    command: [odoo, -i, base, --stop-after-init]
+    command: [odoo, -i, multiodoo, --stop-after-init]
     volumes:
       - ./odoo.conf:/etc/odoo/odoo.conf
       - ./:/mnt/extra-addons

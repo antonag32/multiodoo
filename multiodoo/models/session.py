@@ -50,6 +50,9 @@ class RedisSessionStore(SessionStore):
         session.should_rotate = False
         self.save(session)
 
+    def vacuum(self, **kwargs):
+        pass
+
 
 def redis_session_gc(_session_store: RedisSessionStore):
     pass

@@ -1,4 +1,4 @@
 FROM odoo:17
 
-COPY requirements.txt tmp/requirements.txt
-RUN python3 -m pip install -r tmp/requirements.txt
+COPY . /mnt/extra-addons
+RUN python3 -m pip install -r /mnt/extra-addons/requirements.txt
