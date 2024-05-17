@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: erp
+  labels:
+    app: odoo
+spec:
+  ports:
+    - name: odoo
+      port: 8069
+      targetPort: 8069
+    - name: longpolling
+      port: 8072
+      targetPort: 8072
+  selector:
+    app: odoo
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: erp
+  labels:
+    app: odoo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: odoo
+  template:
+    metadata:
+      labels:
+        app: odoo
+    spec:
+      containers:
+        - name: erp
+          image: ghcr.io/antonag32/multiodoo
+          env:
+            - name: HOST
+              value: database
+            - name: ODOO_REDIS_URL
+              value: redis://cache/
+          args: [ "odoo", "--database", "odoo", "--load", "multiodoo",]
+          ports:
+            - name: odoo
+              containerPort: 8069
+            - name: longpolling
+              containerPort: 8072

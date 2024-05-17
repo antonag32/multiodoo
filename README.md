@@ -34,3 +34,26 @@ To run the chaos monkey with its default behaviour simply execute the following 
 ```shell
 ./chaos-monkey
 ```
+
+## Kubernetes Support
+The culmination of running parallel odoo instances is autoscaling Odoo with Kubernetes. 
+Some sample files can be found under `k8s`. The structure is really similar to the Docker compose setup if not
+practically the same.
+
+### infra.yaml
+This creates a PostgreSQL and Redis service, both required for Odoo's deployment. In real life this may not
+even run as part of your cluster but in order to make everything self-contained they have been included.
+
+### bootstrap.yaml
+This is a job that initializes the database. It can also be used when updating the database schema is necessary, for
+example if a new field or model is added. This should be run before the actual parallel Odoo
+pods get deployed. It ensures installation/upgrades are not run in parallel. If you spin up a bunch of pods with the
+update command everything will burn down since they will block each other when accessing the same db records.
+
+### odoo.yaml
+These are the actual Odoo instances that run in parallel and sit behind a load balancer to serve traffic. Not much
+more to say about them.
+
+**Note: If you are running this locally (for example using KIND), you can use 
+`kubectl port-forward service/erp 8069:8069 8072:8072` to quickly get access to Odoo's UI. Otherwise you might
+want to look into [MetalLB](https://metallb.universe.tf/)**

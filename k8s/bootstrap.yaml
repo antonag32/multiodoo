@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bootstrap
+spec:
+  template:
+    spec:
+      containers:
+        - name: boostrap
+          image: ghcr.io/antonag32/multiodoo
+          env:
+            - name: HOST
+              value: database
+            - name: ODOO_REDIS_URL
+              value: redis://cache/
+          args: ["odoo", "--database", "odoo", "-i", "multiodoo", "--load", "multiodoo", "--stop-after-init"]
+      restartPolicy: Never
